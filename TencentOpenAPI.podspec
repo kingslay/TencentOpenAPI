@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '6.0'
   s.requires_arc = true
 
-  s.source       = { :git => 'https://github.com/crazyhf/TencentOpenAPI.git', :tag => 'v#{spec.version}' }
+  s.source       = { :git => 'https://github.com/kingslay/TencentOpenAPI.git', :tag => 'master' }
 
   s.source_files   = "TencentOpenAPI/TencentOpenAPI.framework/Headers/**/*.h"
 

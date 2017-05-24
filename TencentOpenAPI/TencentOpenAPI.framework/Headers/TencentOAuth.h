@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "sdkdef.h"
 #import "TencentOAuthObject.h"
-#import "TencentApiInterface.h"
 
 @protocol TencentSessionDelegate;
 @protocol TencentLoginDelegate;
@@ -84,12 +83,6 @@ typedef enum
 /** 授权方式(Client Side Token或者Server Side Code) */
 @property(nonatomic, assign) TencentAuthMode authMode;
 
-/** union id */
-@property(nonatomic, retain) NSString* unionid;
-
-/** 第三方在授权登录/分享 时选择 QQ，还是TIM 。在授权前一定要指定其中一个类型*/
-@property(nonatomic, assign) TencentAuthShareType authShareType;
-
 /**
  * 用来获得当前sdk的版本号
  * \return 返回sdk版本号
@@ -127,13 +120,6 @@ typedef enum
  **/
 + (QQVersion)iphoneQQVersion;
 
-
-/**
- * 用来获得当前手机TIM的版本号
- * \return 返回手机qq版本号
- **/
-+ (QQVersion)iphoneTIMVersion;
-
 /**
  * 初始化TencentOAuth对象
  * \param appId 第三方应用在互联开放平台申请的唯一标识
@@ -149,24 +135,12 @@ typedef enum
  * \return YES:安装 NO:没安装
  */
 + (BOOL)iphoneQQInstalled;
-
-/**
- * 判断用户手机上是否安装手机TIM
- * \return YES:安装 NO:没安装
- */
-+ (BOOL)iphoneTIMInstalled;
  
 /**
  * 判断用户手机上的手机QQ是否支持SSO登录
  * \return YES:支持 NO:不支持
  */
 + (BOOL)iphoneQQSupportSSOLogin;
-
-/**
- * 判断用户手机上的手机TIM是否支持SSO登录
- * \return YES:支持 NO:不支持
- */
-+ (BOOL)iphoneTIMSupportSSOLogin;
 
 /**
  * 判断用户手机上是否安装手机QZone
@@ -218,12 +192,6 @@ typedef enum
  * \return 授权调用是否成功
  */
 - (BOOL)reauthorizeWithPermissions:(NSArray *)permissions;
-
-/**
- * 获取UnindID,可以根据UnindID的比较来确定OpenID是否属于同一个用户
- * \return NO未登录，信息不足；YES条件满足，发送请求成功，请等待回调
- */
-- (BOOL)RequestUnionId;
 
 /**
  * (静态方法)处理应用拉起协议
@@ -372,6 +340,20 @@ typedef enum
 - (BOOL)getVipRichInfo;
 
 /**
+ * 获取微博好友名称输入提示,即通过字符串查找匹配的微博好友
+ * \param params 参数字典,字典的关键字参见TencentOAuthObject.h中的\ref TCMatchNickTipsDic
+ * \return 处理结果，YES表示API调用成功，NO表示API调用失败，登录态失败，重新登录
+ */
+- (BOOL)matchNickTips:(NSMutableDictionary *)params;
+
+/**
+ * 获取最近的微博好友
+ * \param params 参数字典,字典的关键字参见TencentOAuthObject.h中的\ref TCGetIntimateFriendsDic
+ * \return 处理结果，YES表示API调用成功，NO表示API调用失败，登录态失败，重新登录
+ */
+- (BOOL)getIntimateFriends:(NSMutableDictionary *)params;
+
+/**
  * QZone定向分享，可以@到具体好友，完成后将触发responseDidReceived:forMessage:回调，message：“SendStory”
  * \param params 参数字典
  * \param fopenIdArray 第三方应用预传人好友列表，好友以openid标识
@@ -475,11 +457,6 @@ typedef enum
  * 登录时权限信息的获得
  */
 - (NSArray *)getAuthorizedPermissions:(NSArray *)permissions withExtraParams:(NSDictionary *)extraParams;
-
-/**
- * unionID获得
- */
-- (void)didGetUnionID;
 
 @end
 
@@ -626,6 +603,22 @@ typedef enum
  * \param response API返回结果，具体定义参见sdkdef.h文件中\ref APIResponse
  */
 - (void)getVipRichInfoResponse:(APIResponse*) response;
+
+/**
+ * 获取微博好友名称输入提示回调
+ * \param response API返回结果，具体定义参见sdkdef.h文件中\ref APIResponse
+ * \remarks 正确返回示例: \snippet example/matchNickTipsResponse.exp success
+ *          错误返回示例: \snippet example/matchNickTipsResponse.exp fail
+ */
+- (void)matchNickTipsResponse:(APIResponse*) response;
+
+/**
+ * 获取最近的微博好友回调
+ * \param response API返回结果，具体定义参见sdkdef.h文件中\ref APIResponse
+ * \remarks 正确返回示例: \snippet example/getIntimateFriendsResponse.exp success
+ *          错误返回示例: \snippet example/getIntimateFriendsResponse.exp fail
+ */
+- (void)getIntimateFriendsResponse:(APIResponse*) response;
 
 /**
  * sendStory分享的回调（已废弃，使用responseDidReceived:forMessage:）
